@@ -1,0 +1,35 @@
+# This app's own settings. Everything about the board - flash, PSRAM, cache,
+# the console - arrives from kbsp's sdkconfig.board, which CMakeLists.txt
+# fetches and reads first. Do not copy any of it here.
+
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="managed_components/kodediy__kbsp/partitions.csv"
+
+# The role AO_Boot plays, and the safety property the slot model rests on:
+# this firmware never writes otadata, so any reset returns to kodeOS.
+CONFIG_KODEOS_BOOT_ROLE_APP=y
+
+# The console over the USB-C cable: somewhere to watch the app from on the
+# bench.
+CONFIG_KODEOS_CONSOLE=y
+
+# No radio until the app needs one: it is the most expensive thing an app can
+# bring up for nothing. To turn the network on, delete the line below and
+# CONFIG_BT_ENABLED=n further down.
+CONFIG_KODEOS_RADIO=n
+
+# CONFIG_ESP_HOSTED_ENABLED=n, which has to come with the radio off (catalog
+# rule B7), arrives from kbsp's sdkconfig.board from SDK v0.1.1 on, and an
+# app may not set a board key again (rule B5).
+
+# No radio, so no BLE host: the board file turns the NimBLE lines on.
+CONFIG_BT_ENABLED=n
+
+# The SDK's own log lines are compiled in at every level, and most of them are
+# INFO: a shipped app that will never print them can compile them away, which
+# is well over a hundred kB of format strings.
+# CONFIG_KLOG_MAXIMUM_LEVEL_WARN=y
+
+# AO_Nfc, the owner of the ST25R3916B reader: an app leaves it out unless it
+# asks, and kode_nfc_read_id() needs it. The 125 kHz reader, AO_Rfid, is in
+# every firmware already.
+CONFIG_KODEOS_NFC=y
